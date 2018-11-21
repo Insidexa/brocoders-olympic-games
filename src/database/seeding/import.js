@@ -3,8 +3,9 @@ const { CSVReader } = require('./csv.reader');
 const { AthletesCSV } = require('./../../models/csv-mapper/AthletesCSV.js');
 const { TeamCSV } = require('./../../models/csv-mapper/TeamCSV.js');
 const { GameCSV, TYPE_SEASON } = require('./../../models/csv-mapper/GameCSV.js');
+const { SportCSV } = require('./../../models/csv-mapper/SportCSV.js');
 
-const db = new sqlite3.Database('./database/olympic_history.db', sqlite3.OPEN_READWRITE, (err) => {
+const db = new sqlite3.Database('./src/database/olympic_history.db', sqlite3.OPEN_READWRITE, (err) => {
   if (err) {
     console.error(err.message);
   }
@@ -14,7 +15,9 @@ const db = new sqlite3.Database('./database/olympic_history.db', sqlite3.OPEN_RE
 const athletes = [];
 const teams = [];
 const games = [];
-const parser = new CSVReader('./database/seeding/athlete_events.csv');
+const sports = [];
+const gamesWithMoreCities = [];
+const parser = new CSVReader('./src/database/seeding/athlete_events.csv');
 
 function uniqueBy(arr, fn) {
   const uniqueKey = {};
@@ -71,10 +74,13 @@ parser.parse((row) => {
     if (isNotOfficial) {
       games.push(game);
     }
+
+    const sportCSV = new SportCSV(unquotedArray, gameCSV.getLastColumnNumber());
+    const sport = sportCSV.parseModel();
+    sports.push(sport);
   }
 });
 
-const gamesWithMoreCities = [];
 const uniqueTeams = uniqueBy(teams, team => team.noc_name);
 
 // уникальные игры по значению каждой игры
