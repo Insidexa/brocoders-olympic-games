@@ -1,8 +1,10 @@
 const { Team } = require('./../../models/Team');
 
 class TeamCSV {
-	constructor(array) {
-		this.array = array;
+	constructor(csvArray, previous) {
+		this.start = previous || 6;
+		this.end = 8;
+		this.array = csvArray.slice(this.start, this.end);
 	}
 
 	parseModel() {
@@ -16,6 +18,10 @@ class TeamCSV {
 
 	prepareName(name) {
 		return name.replace(/(-[0-9])/g, '');
+	}
+
+	getLastColumnNumber() {
+		return this.end;
 	}
 }
 

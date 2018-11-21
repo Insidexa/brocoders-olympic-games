@@ -52,37 +52,25 @@ const athletes = [],
 
 const parser = new CSVReader('./database/seeding/athlete_events.csv');
 
-/**
- * Можно было у каждой модели CSV определить
- * начало считывания столбика и конец, т.е. модель знает от и до как читать.
- * const columns = csvArray.slice(start, end)
- *
- * В данном случаи мы просто убираем то что уже прошли
- */
 parser.parse((row) => {
 	const array = CSVStringToArray(row);
 
 	if (array) {
 		const unquotedArray = removeQuotesFromCSVStringArray(array);
 
-		athletes.push(
-			new AthletesCSV( unquotedArray ).parseModel()
-		);
+		const athleteCSV = new AthletesCSV( unquotedArray );
+		const athlete = athleteCSV.parseModel();
+		athletes.push(athlete);
 
-		unquotedArray.splice(0, 6);
+		const teamCSV = new TeamCSV(unquotedArray, athleteCSV.getLastColumnNumber());
+		const team = teamCSV.parseModel();
+		teams.push(team);
 
-		teams.push(
-			new TeamCSV(unquotedArray).parseModel()
-		);
-
-		unquotedArray.splice(0, 2);
-
-		const game = new GameCSV(unquotedArray).parseModel();
-		const isNotOfficial = game.year === 1906 && game.season === TYPE_SEASON.Summer;
-		if (!isNotOfficial) {
-			games.push(
-				game
-			);
+		const gameCSV = new GameCSV(unquotedArray, teamCSV.getLastColumnNumber());
+		const game = gameCSV.parseModel();
+		const isNotOfficial = !(game.year === 1906 && game.season === TYPE_SEASON.Summer);
+		if (isNotOfficial) {
+			games.push(game);
 		}/* else {
 			console.log('not official', game)
 		}*/
@@ -121,5 +109,8 @@ uniqueGames.forEach(game => {
 		gamesWithMoreCities.push(game);
 	}
 });
+
+console.log(gamesWithMoreCities.length)
+console.log(uniqueTeams.length)
 
 db.close();

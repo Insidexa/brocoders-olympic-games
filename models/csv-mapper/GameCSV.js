@@ -6,8 +6,10 @@ const TYPE_SEASON = {
 };
 
 class GameCSV {
-	constructor(array) {
-		this.array = array;
+	constructor(csvArray, previous) {
+		this.start = previous || 8;
+		this.end = 12;
+		this.array = csvArray.slice(this.start, this.end);
 	}
 
 	parseModel() {
@@ -18,6 +20,10 @@ class GameCSV {
 			TYPE_SEASON[season],
 			city
 		);
+	}
+
+	getLastColumnNumber() {
+		return this.end;
 	}
 }
 

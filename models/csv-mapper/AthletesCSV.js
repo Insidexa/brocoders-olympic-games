@@ -2,12 +2,14 @@ const { Athlete } = require('./../../models/Athlete');
 const { NAOrDefault } = require('./../../app/support/na-default');
 
 class AthletesCSV {
-	constructor(array) {
-		this.array = array;
+	constructor(csvArray, previous) {
+		this.start = previous || 0;
+		this.end = 6;
+		this.array = csvArray.slice(this.start, this.end);
 	}
 
 	parseModel() {
-		const [ _, name, sex, yearOfBirth, height, weight, teamId ] = this.array;
+		const [ _, name, sex, yearOfBirth, height, weight ] = this.array;
 
 		return new Athlete(
 			this.prepareName(name),
@@ -17,7 +19,7 @@ class AthletesCSV {
 				height: this.prepareParam(height),
 				weight: this.prepareParam(weight),
 			},
-			teamId
+			null
 		);
 	}
 
@@ -37,6 +39,10 @@ class AthletesCSV {
 
 	removeDataInBrackets(name) {
 		return name.replace(/ *\([^)]*\) */g, "");
+	}
+
+	getLastColumnNumber() {
+		return this.end;
 	}
 }
 
