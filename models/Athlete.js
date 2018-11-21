@@ -1,4 +1,4 @@
-class Athletes {
+class Athlete {
 	constructor(full_name, sex, yearOfBirth, params, teamId) {
 		this.full_name = full_name;
 		this.sex = sex;
@@ -8,4 +8,4 @@ class Athletes {
 	}
 }
 
-exports.Athletes = Athletes;
+exports.Athlete = Athlete;

@@ -1,4 +1,4 @@
-const { Athletes } = require('./../../models/Athlete');
+const { Athlete } = require('./../../models/Athlete');
 const { NAOrDefault } = require('./../../app/support/na-default');
 
 class AthletesCSV {
@@ -9,7 +9,7 @@ class AthletesCSV {
 	parseModel() {
 		const [ _, name, sex, yearOfBirth, height, weight, teamId ] = this.array;
 
-		return new Athletes(
+		return new Athlete(
 			this.prepareName(name),
 			sex,
 			parseInt(yearOfBirth),
