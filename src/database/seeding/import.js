@@ -4,6 +4,7 @@ const { AthletesCSV } = require('./../../models/csv-mapper/AthletesCSV.js');
 const { TeamCSV } = require('./../../models/csv-mapper/TeamCSV.js');
 const { GameCSV, TYPE_SEASON } = require('./../../models/csv-mapper/GameCSV.js');
 const { SportCSV } = require('./../../models/csv-mapper/SportCSV.js');
+const { EventCSV } = require('./../../models/csv-mapper/EventCSV.js');
 
 const db = new sqlite3.Database('./src/database/olympic_history.db', sqlite3.OPEN_READWRITE, (err) => {
   if (err) {
@@ -16,6 +17,7 @@ const athletes = [];
 const teams = [];
 const games = [];
 const sports = [];
+const events = [];
 const gamesWithMoreCities = [];
 const parser = new CSVReader('./src/database/seeding/athlete_events.csv');
 
@@ -78,6 +80,10 @@ parser.parse((row) => {
     const sportCSV = new SportCSV(unquotedArray, gameCSV.getLastColumnNumber());
     const sport = sportCSV.parseModel();
     sports.push(sport);
+
+    const eventCSV = new EventCSV(unquotedArray, sportCSV.getLastColumnNumber());
+    const event = eventCSV.parseModel();
+    events.push(event);
   }
 });
 
