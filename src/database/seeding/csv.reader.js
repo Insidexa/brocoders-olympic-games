@@ -12,7 +12,7 @@ class CSVReader {
     const lines = data.split('\n');
     lines.shift();
 
-    lines.forEach(line => onParseRowCallback(line));
+    lines.forEach((line, index) => onParseRowCallback(line, index));
   }
 
   assertFileExists(path) {
