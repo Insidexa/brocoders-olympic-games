@@ -8,6 +8,7 @@ const MAX_MEDALS_AVERAGE = 200;
 
 class TopTeamsHandler {
   constructor(db, argv) {
+    this.headerName = 'NOC';
     this.db = db;
     this.medal = null;
     this.year = null;
