@@ -23,7 +23,8 @@ class Output {
 
   printRow(item) {
     const [headerProp, propName] = Object.keys(item);
-    console.log(`${item[headerProp]}${this.getTabulation()}${this.printChartLine(item[propName])}`);
+    const value = item[propName] === 0 ? item[propName] : this.printChartLine(item[propName]);
+    console.log(`${item[headerProp]}${this.getTabulation()}${value}`);
   }
 
   printChartLine(value) {
