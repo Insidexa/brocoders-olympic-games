@@ -1,5 +1,10 @@
-function assertExit(value, needOf) {
+function argumentOrExit(value, text) {
+  if (value) {
+    return true;
+  }
 
+  console.log(text);
+  process.exit(1);
 }
 
-exports.assertExit = assertExit;
+exports.argumentOrExit = argumentOrExit;
