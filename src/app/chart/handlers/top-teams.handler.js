@@ -1,8 +1,8 @@
-const { argumentOrExit } = require('./../support/argument-or-exit');
+const { argumentOrExit } = require('../../support/argument-or-exit');
 const {
   checkIsMedal, checkIsSeason, medalToEnum, seasonToEnum,
-} = require('./types');
-const { SEASON_MSG } = require('./messages');
+} = require('../../support/types');
+const { SEASON_MSG } = require('../../support/messages');
 
 const MAX_MEDALS_AVERAGE = 200;
 
@@ -67,10 +67,6 @@ class TopTeamsHandler {
   getAverage(results) {
     const sum = results.reduce((sum, current) => sum + current, 0);
     return Math.ceil(sum / results.length);
-  }
-
-  output(results) {
-    console.log(results);
   }
 
   makeMedalsQuery() {
