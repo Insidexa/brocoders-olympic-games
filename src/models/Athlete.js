@@ -6,6 +6,10 @@ class Athlete {
     this.params = params || { height: null, width: null };
     this.team_id = teamId;
   }
+
+  stringifyParams() {
+    this.params = JSON.stringify(this.params);
+  }
 }
 
 exports.Athlete = Athlete;
