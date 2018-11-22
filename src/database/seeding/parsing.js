@@ -1,7 +1,8 @@
 const { CSVReader } = require('./csv.reader');
 const { AthletesCSV } = require('./../../models/csv-mapper/AthletesCSV.js');
 const { TeamCSV } = require('./../../models/csv-mapper/TeamCSV.js');
-const { GameCSV, TYPE_SEASON } = require('./../../models/csv-mapper/GameCSV.js');
+const { TYPE_SEASON } = require('./../../models/Game.js');
+const { GameCSV } = require('./../../models/csv-mapper/GameCSV.js');
 const { SportCSV } = require('./../../models/csv-mapper/SportCSV.js');
 const { EventCSV } = require('./../../models/csv-mapper/EventCSV.js');
 

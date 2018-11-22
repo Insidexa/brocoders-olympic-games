@@ -3,13 +3,7 @@ const {
   athletes, teams, games, sports, events, csv,
 } = require('./parsing');
 const { TYPE_SEASON } = require('./../../models/csv-mapper/GameCSV.js');
-
-const MEDAL = {
-  NA: 0,
-  Gold: 1,
-  Silver: 2,
-  Bronze: 3,
-};
+const { TYPE_MEDAL } = require('./../../models/Result.js');
 
 Object.prototype.remap = function () {
   return JSON.parse(JSON.stringify(this));
@@ -73,7 +67,7 @@ function escapeQuotes(str) {
 }
 
 function prepareResult(db, row) {
-  const medal = MEDAL[row[14]];
+  const medal = TYPE_MEDAL[row[14]];
   const eventId = db.prepare(`SELECT id FROM Events WHERE \`name\` = '${escapeQuotes(row[13])}'`).get().id;
   const sportId = db.prepare('SELECT id FROM Sports WHERE `name` = ?').get(row[12]).id;
   const city = escapeQuotes(row[11]);
