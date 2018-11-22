@@ -9,3 +9,4 @@ rules:
   no-extend-native: 0
   no-restricted-syntax: 0
   quotes: 0
+  guard-for-in: 0
