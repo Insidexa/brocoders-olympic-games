@@ -1,117 +1,150 @@
-const sqlite3 = require('sqlite3').verbose();
-const { CSVReader } = require('./csv.reader');
-const { AthletesCSV } = require('./../../models/csv-mapper/AthletesCSV.js');
-const { TeamCSV } = require('./../../models/csv-mapper/TeamCSV.js');
-const { GameCSV, TYPE_SEASON } = require('./../../models/csv-mapper/GameCSV.js');
-const { SportCSV } = require('./../../models/csv-mapper/SportCSV.js');
-const { EventCSV } = require('./../../models/csv-mapper/EventCSV.js');
+const sqlite3 = require('better-sqlite3');
+const {
+  athletes, teams, games, sports, events, csv,
+} = require('./parsing');
+const { TYPE_SEASON } = require('./../../models/csv-mapper/GameCSV.js');
 
-const db = new sqlite3.Database('./src/database/olympic_history.db', sqlite3.OPEN_READWRITE, (err) => {
-  if (err) {
-    console.error(err.message);
-  }
-  console.log('Connected to the chinook database.');
-});
+const MEDAL = {
+  NA: 0,
+  Gold: 1,
+  Silver: 2,
+  Bronze: 3,
+};
 
-const athletes = [];
-const teams = [];
-const games = [];
-const sports = [];
-const events = [];
-const gamesWithMoreCities = [];
-const parser = new CSVReader('./src/database/seeding/athlete_events.csv');
+Object.prototype.remap = function () {
+  return JSON.parse(JSON.stringify(this));
+};
 
-function uniqueBy(arr, fn) {
-  const uniqueKey = {};
-  const uniques = [];
+function insertTeams(db, teams) {
+  const insert = db.prepare('INSERT INTO Teams(`name`, noc_name) VALUES (@name, @noc_name)');
 
-  arr.forEach((item) => {
-    const value = fn(item);
-    if (!uniqueKey[value]) {
-      uniqueKey[value] = true;
-      uniques.push(item);
+  const insertMany = db.transaction((teams) => {
+    for (const team of teams) {
+      insert.run(team);
     }
   });
 
-  return uniques;
+  insertMany(teams.map(team => team.model.remap()));
 }
 
-function removeQuotesIfNeeded(str) {
-  if (str[0] === '"') {
-    str = str.substr(1);
-  }
+function insertGames(db, games) {
+  const insert = db.prepare('INSERT INTO Games(year, season, city) VALUES (@year, @season, @city)');
 
-  if (str[str.length - 1] === '"') {
-    str = str.substr(0, str.length - 1);
+  const insertMany = db.transaction((games) => {
+    for (const game of games) {
+      insert.run(game);
+    }
+  });
+
+  insertMany(games.map(game => game.model.remap()));
+}
+
+function insertEvents(db, events) {
+  const insert = db.prepare('INSERT INTO Events(name) VALUES (@name)');
+
+  const insertMany = db.transaction((events) => {
+    for (const event of events) {
+      insert.run(event);
+    }
+  });
+
+  insertMany(events.map(event => event.model.remap()));
+}
+
+function insertSports(db, sports) {
+  const insert = db.prepare('INSERT INTO Sports(name) VALUES (@name)');
+
+  const insertMany = db.transaction((sports) => {
+    for (const sport of sports) {
+      insert.run(sport);
+    }
+  });
+
+  insertMany(sports.map(sport => sport.model.remap()));
+}
+
+function escapeQuotes(str) {
+  str = str.replace(/\\/g, '');
+  if (str.indexOf('\'') !== -1) {
+    str = str.replace(/'/g, `''`);
   }
 
   return str;
 }
 
-function removeQuotesFromCSVStringArray(array) {
-  return array.map(item => removeQuotesIfNeeded(item));
+function prepareResult(db, row) {
+  const medal = MEDAL[row[14]];
+  const eventId = db.prepare(`SELECT id FROM Events WHERE \`name\` = '${escapeQuotes(row[13])}'`).get().id;
+  const sportId = db.prepare('SELECT id FROM Sports WHERE `name` = ?').get(row[12]).id;
+  const city = escapeQuotes(row[11]);
+
+  const game = db.prepare(`SELECT id FROM Games WHERE year = ? AND season = ? AND city LIKE '%${city}%'`)
+    .get(row[9], TYPE_SEASON[row[10]]);
+
+  return {
+    medal,
+    game_id: game.id,
+    event_id: eventId,
+    sport_id: sportId,
+  };
 }
 
-function CSVStringToArray(row) {
-  return row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-}
+function insertResults(db, results) {
+  const insert = db.prepare(`
+INSERT INTO Results(athlete_id, game_id, sport_id, event_id, medal)
+VALUES (@athlete_id, @game_id, @sport_id, @event_id, @medal)
+`);
 
-parser.parse((row) => {
-  const array = CSVStringToArray(row);
-
-  if (array) {
-    const unquotedArray = removeQuotesFromCSVStringArray(array);
-
-    const athleteCSV = new AthletesCSV(unquotedArray);
-    const athlete = athleteCSV.parseModel();
-    athletes.push(athlete);
-
-    const teamCSV = new TeamCSV(unquotedArray, athleteCSV.getLastColumnNumber());
-    const team = teamCSV.parseModel();
-    teams.push(team);
-
-    const gameCSV = new GameCSV(unquotedArray, teamCSV.getLastColumnNumber());
-    const game = gameCSV.parseModel();
-    const isNotOfficial = !(game.year === 1906 && game.season === TYPE_SEASON.Summer);
-    if (isNotOfficial) {
-      games.push(game);
+  const insertMany = db.transaction((results) => {
+    for (const result of results) {
+      insert.run(result);
     }
+  });
 
-    const sportCSV = new SportCSV(unquotedArray, gameCSV.getLastColumnNumber());
-    const sport = sportCSV.parseModel();
-    sports.push(sport);
-
-    const eventCSV = new EventCSV(unquotedArray, sportCSV.getLastColumnNumber());
-    const event = eventCSV.parseModel();
-    events.push(event);
-  }
-});
-
-const uniqueTeams = uniqueBy(teams, team => team.noc_name);
-
-// уникальные игры по значению каждой игры
-const uniqueGames = uniqueBy(games, game => `${game.season}${game.year}`);
-
-function getGameCities(originalGame) {
-  const cities = [];
-
-  for (let i = 0; i < games.length; i++) {
-    const checkGame = originalGame.year === games[i].year
-      && originalGame.season === games[i].season;
-    if (checkGame) {
-      cities.push(games[i].city);
-    }
-  }
-
-  return cities;
+  insertMany(results);
 }
 
-uniqueGames.forEach((game) => {
-  const cities = getGameCities(game);
-  if (cities.length > 1) {
-    game.changeCitiesMultiple(cities);
-    gamesWithMoreCities.push(game);
-  }
-});
+function insertAthletes(db, athletes) {
+  const preparedResults = [];
+  const insert = db.prepare(`
+INSERT INTO Athletes(full_name, sex, year_of_birth, params, team_id)
+VALUES (@full_name, @sex, @year_of_birth, @params, @team_id)
+`);
 
-db.close();
+  const insertMany = db.transaction((athletes) => {
+    for (const athlete of athletes) {
+      const row = csv[athlete.index];
+      if (row) {
+        const result = prepareResult(db, row);
+        const team = db.prepare('SELECT id FROM Teams WHERE noc_name = ?').get(row[7]);
+        const ath = athlete.model;
+        ath.team_id = team.id;
+        ath.stringifyParams();
+
+        const info = insert.run(ath.remap());
+        result.athlete_id = info.lastInsertRowid;
+        preparedResults.push(result);
+      }
+    }
+  });
+
+  insertMany(athletes);
+
+  return preparedResults;
+}
+
+function importFromCSV() {
+  const db = sqlite3('./storage/olympic_history.db');
+  insertTeams(db, teams);
+  insertEvents(db, events);
+  insertSports(db, sports);
+  insertGames(db, games);
+  const results = insertAthletes(db, athletes);
+  insertResults(db, results);
+
+  process.on('exit', () => db.close());
+  process.on('SIGINT', () => db.close());
+  process.on('SIGHUP', () => db.close());
+  process.on('SIGTERM', () => db.close());
+}
+importFromCSV();
