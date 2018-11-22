@@ -147,4 +147,5 @@ function importFromCSV() {
   process.on('SIGHUP', () => db.close());
   process.on('SIGTERM', () => db.close());
 }
-importFromCSV();
+
+exports.importFromCSV = importFromCSV;

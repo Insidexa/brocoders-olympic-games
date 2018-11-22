@@ -15,7 +15,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "eslint": "./node_modules/.bin/eslint ./src/"
+    "eslint": "./node_modules/.bin/eslint ./src/",
+    "import": "node bin/import"
   },
   "author": "",
   "license": "ISC"
