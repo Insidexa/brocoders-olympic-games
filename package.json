@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "better-sqlite3": "^5.0.1",
     "fs": "0.0.1-security",
     "sqlite3": "^4.0.4"
   },
