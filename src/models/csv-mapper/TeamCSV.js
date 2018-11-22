@@ -5,6 +5,7 @@ class TeamCSV {
     this.start = previous || 6;
     this.end = 8;
     this.array = csvArray.slice(this.start, this.end);
+    this.model = this.parseModel();
   }
 
   parseModel() {

@@ -5,6 +5,7 @@ class SportCSV {
     this.start = previous || 12;
     this.end = 13;
     this.array = csvArray.slice(this.start, this.end);
+    this.model = this.parseModel();
   }
 
   parseModel() {

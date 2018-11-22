@@ -2,10 +2,12 @@ const { Athlete } = require('./../../models/Athlete');
 const { NAOrDefault } = require('./../../app/support/na-default');
 
 class AthletesCSV {
-  constructor(csvArray, previous) {
+  constructor(index, csvArray, previous) {
+    this.index = index;
     this.start = previous || 0;
     this.end = 6;
     this.array = csvArray.slice(this.start, this.end);
+    this.model = this.parseModel();
   }
 
   parseModel() {

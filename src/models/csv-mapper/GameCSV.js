@@ -10,6 +10,7 @@ class GameCSV {
     this.start = previous || 8;
     this.end = 12;
     this.array = csvArray.slice(this.start, this.end);
+    this.model = this.parseModel();
   }
 
   parseModel() {

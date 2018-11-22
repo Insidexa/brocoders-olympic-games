@@ -5,6 +5,7 @@ class EventCSV {
     this.start = previous || 13;
     this.end = 14;
     this.array = csvArray.slice(this.start, this.end);
+    this.model = this.parseModel();
   }
 
   parseModel() {
