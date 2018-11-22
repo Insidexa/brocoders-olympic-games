@@ -1,3 +1,4 @@
+// eslint-disable-next-line consistent-return
 function argumentOrExit(value, text) {
   if (value) {
     return true;

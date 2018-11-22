@@ -1,11 +1,10 @@
 class TopTeamsHandler {
-	constructor(argv) {
+  constructor(argv) {
+  }
 
-	}
+  handle() {
 
-	handle() {
-
-	}
+  }
 }
 
 exports.TopTeamsHandler = TopTeamsHandler;

@@ -15,7 +15,7 @@ const NOC_MSG = `Enter NOC name`;
 
 class MedalsHandler {
   constructor(argv) {
-  	this.medal = null;
+    this.medal = null;
     const [_maybeSeason, noc, _maybeMedal] = argv;
 
     argumentOrExit(_maybeSeason, SEASON_MSG);
@@ -27,55 +27,54 @@ class MedalsHandler {
   }
 
   handle() {
-		console.log(this)
   }
 
   initParams(_maybeSeason, noc, _maybeMedal) {
-	  const maybeSeason = _maybeSeason.toLowerCase();
+    const maybeSeason = _maybeSeason.toLowerCase();
 
-  	if (typeof _maybeMedal === 'undefined') {
-  		this.season = _maybeSeason;
-	  } else {
-		  const maybeMedal = _maybeMedal.toLowerCase();
-		  this.initSeason(maybeSeason, maybeMedal);
-		  this.initMedal(maybeMedal, maybeSeason);
-	  }
+    if (typeof _maybeMedal === 'undefined') {
+      this.season = _maybeSeason;
+    } else {
+      const maybeMedal = _maybeMedal.toLowerCase();
+      this.initSeason(maybeSeason, maybeMedal);
+      this.initMedal(maybeMedal, maybeSeason);
+    }
 
-	  this.noc = noc;
+    this.noc = noc;
   }
 
   initSeason(maybeSeason, maybeMedal) {
-  	const isSeason = this.checkIsSeason(maybeSeason) || this.checkIsMedal(maybeSeason);
-	  if (!isSeason) {
-		  argumentOrExit(undefined, SEASON_MSG);
-	  }
+    const isSeason = this.checkIsSeason(maybeSeason) || this.checkIsMedal(maybeSeason);
+    if (!isSeason) {
+      argumentOrExit(undefined, SEASON_MSG);
+    }
 
-	  if (this.checkIsSeason(maybeSeason)) {
+    if (this.checkIsSeason(maybeSeason)) {
       this.season = maybeSeason;
-	  }
+    }
 
-	  if (this.checkIsSeason(maybeMedal)) {
-		  this.season = maybeMedal;
-	  }
+    if (this.checkIsSeason(maybeMedal)) {
+      this.season = maybeMedal;
+    }
   }
 
   initMedal(maybeMedal, maybeSeason) {
-	  const isMedal = this.checkIsMedal(maybeMedal) || this.checkIsSeason(maybeMedal);
-	  if (!isMedal) {
-		  argumentOrExit(undefined, MEDAL_MSG);
-	  }
+    const isMedal = this.checkIsMedal(maybeMedal) || this.checkIsSeason(maybeMedal);
+    if (!isMedal) {
+      argumentOrExit(undefined, MEDAL_MSG);
+    }
 
-	  if (this.checkIsMedal(maybeMedal)) {
-		  this.medal = maybeMedal;
-	  }
+    if (this.checkIsMedal(maybeMedal)) {
+      this.medal = maybeMedal;
+    }
 
-	  if (this.checkIsMedal(maybeSeason)) {
-		  this.medal = maybeSeason;
-	  }
+    if (this.checkIsMedal(maybeSeason)) {
+      this.medal = maybeSeason;
+    }
   }
 
   checkIsMedal(maybeMedal) {
-  	return MEDALS.includes(maybeMedal);
+    return MEDALS.includes(maybeMedal);
   }
 
   checkIsSeason(maybeSeason) {
