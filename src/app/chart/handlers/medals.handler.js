@@ -1,16 +1,17 @@
-const { argumentOrExit } = require('./../support/argument-or-exit');
+const { argumentOrExit } = require('../../support/argument-or-exit');
 const {
   checkIsMedal, checkIsSeason, medalToEnum, seasonToEnum,
-} = require('./types');
-const { SEASON_MSG, MEDAL_MSG, NOC_MSG } = require('./messages');
+} = require('../../support/types');
+const { SEASON_MSG, MEDAL_MSG, NOC_MSG } = require('../../support/messages');
 
 class MedalsHandler {
   constructor(db, argv) {
+    this.headerName = 'Year';
     this.db = db;
     this.medal = null;
     const [_maybeSeason, noc, _maybeMedal] = argv;
 
-    // argumentOrExit(_maybeSeason, SEASON_MSG);
+    argumentOrExit(_maybeSeason, SEASON_MSG);
     argumentOrExit(noc, NOC_MSG);
     // medal optional
     // argumentOrExit(_maybeMedal, MEDAL_MSG);
@@ -23,38 +24,31 @@ class MedalsHandler {
 
     const params = [this.season, this.noc];
     if (this.medal) {
-      params.unshift(this.medal);
+      params.push(this.medal);
     }
 
-    const yearsMedals = this.db
-      .prepare(sql)
-      .all(params);
-
-    console.log(yearsMedals);
-
-    return 1;
-  }
-
-  output(results) {
-    console.log(results);
+    return this.db.prepare(sql).all(params);
   }
 
   makeMedalsQuery() {
     const medalParam = this.medal
-      ? ` AND results.medal = ?`
-      : ' AND results.medal > 0';
+      ? `WHERE results.medal = ?`
+      : 'WHERE results.medal > 0'; // not calculate when medal not exists
 
     return `
-    SELECT
-      games.year,
-      count(results.id) AS countMedals
-    FROM teams
-      JOIN athletes ON athletes.team_id = teams.id
-      JOIN results ON results.athlete_id = athletes.id${medalParam}
-      JOIN games ON games.id = results.game_id AND games.season = ?
-    WHERE noc_name = ?
-    GROUP BY games.year
-    ORDER BY games.year`;
+      SELECT
+        games.year,
+        count(results.id) AS countMedals
+      FROM games
+        LEFT JOIN (
+                    SELECT * FROM results
+                      JOIN games ON games.id = results.game_id AND games.season = ?
+                      JOIN athletes ON athletes.id = results.athlete_id
+                      JOIN teams ON teams.id = athletes.team_id AND teams.noc_name = ?
+                    ${medalParam}
+                  ) AS results ON results.game_id = games.id
+      GROUP BY games.year
+      ORDER BY games.year;`;
   }
 
   initParams(_maybeSeason, noc, _maybeMedal) {
