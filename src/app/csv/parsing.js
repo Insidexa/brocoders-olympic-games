@@ -1,10 +1,10 @@
 const { CSVReader } = require('./csv.reader');
-const { AthletesCSV } = require('./csv-mapper/AthletesCSV.js');
-const { TeamCSV } = require('./csv-mapper/TeamCSV.js');
+const { AthletesCSV } = require('./mappers/AthletesCSV.js');
+const { TeamCSV } = require('./mappers/TeamCSV.js');
 const { TYPE_SEASON } = require('../../models/Game.js');
-const { GameCSV } = require('./csv-mapper/GameCSV.js');
-const { SportCSV } = require('./csv-mapper/SportCSV.js');
-const { EventCSV } = require('./csv-mapper/EventCSV.js');
+const { GameCSV } = require('./mappers/GameCSV.js');
+const { SportCSV } = require('./mappers/SportCSV.js');
+const { EventCSV } = require('./mappers/EventCSV.js');
 
 const csv = [];
 const athletes = [];
