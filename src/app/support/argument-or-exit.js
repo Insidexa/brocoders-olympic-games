@@ -1,6 +1,6 @@
 // eslint-disable-next-line consistent-return
 function argumentOrExit(value, text) {
-  if (value) {
+  if (typeof value !== 'undefined') {
     return true;
   }
 
