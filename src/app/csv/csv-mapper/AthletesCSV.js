@@ -1,5 +1,5 @@
-const { Athlete } = require('./../../models/Athlete');
-const { NAOrDefault } = require('./../../app/support/na-default');
+const { Athlete } = require('../../../models/Athlete');
+const { NAOrDefault } = require('../../support/na-default');
 
 class AthletesCSV {
   constructor(index, csvArray, previous) {

@@ -1,8 +1,8 @@
 const sqlite3 = require('better-sqlite3');
 const {
   athletes, teams, games, sports, events, csv,
-} = require('./parsing');
-const { TYPE_SEASON } = require('./../../models/csv-mapper/GameCSV.js');
+} = require('../../app/csv/parsing');
+const { TYPE_SEASON } = require('../../app/csv/csv-mapper/GameCSV.js');
 const { TYPE_MEDAL } = require('./../../models/Result.js');
 
 Object.prototype.remap = function () {

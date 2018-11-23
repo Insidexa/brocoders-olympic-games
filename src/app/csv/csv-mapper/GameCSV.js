@@ -1,4 +1,4 @@
-const { Game, TYPE_SEASON } = require('./../../models/Game');
+const { Game, TYPE_SEASON } = require('../../../models/Game');
 
 class GameCSV {
   constructor(csvArray, previous) {

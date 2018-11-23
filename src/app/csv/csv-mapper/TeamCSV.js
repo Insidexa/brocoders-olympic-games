@@ -1,4 +1,4 @@
-const { Team } = require('./../../models/Team');
+const { Team } = require('../../../models/Team');
 
 class TeamCSV {
   constructor(csvArray, previous) {

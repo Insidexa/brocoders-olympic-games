@@ -1,9 +1,9 @@
-const { Sport } = require('./../../models/Sport');
+const { Event } = require('../../../models/Event');
 
-class SportCSV {
+class EventCSV {
   constructor(csvArray, previous) {
-    this.start = previous || 12;
-    this.end = 13;
+    this.start = previous || 13;
+    this.end = 14;
     this.array = csvArray.slice(this.start, this.end);
     this.model = this.parseModel();
   }
@@ -11,7 +11,7 @@ class SportCSV {
   parseModel() {
     const [name] = this.array;
 
-    return new Sport(
+    return new Event(
       name,
     );
   }
@@ -21,4 +21,4 @@ class SportCSV {
   }
 }
 
-exports.SportCSV = SportCSV;
+exports.EventCSV = EventCSV;
