@@ -2,6 +2,7 @@ const sqlite3 = require('better-sqlite3');
 const { CSVParser } = require('../../app/csv/csv-parser');
 const { TYPE_SEASON } = require('../../app/csv/mappers/game-csv.js');
 const { TYPE_MEDAL } = require('../../models/result.js');
+const { escapeSQLite3SingleQuotes } = require('../../app/support/escape-sqlite3-single-quotes');
 
 Object.prototype.remap = function () {
   return JSON.parse(JSON.stringify(this));
@@ -55,21 +56,13 @@ function insertSports(db, sports) {
   insertMany(sports.map(sport => sport.model.remap()));
 }
 
-function escapeQuotes(str) {
-  str = str.replace(/\\/g, '');
-  if (str.indexOf('\'') !== -1) {
-    str = str.replace(/'/g, `''`);
-  }
-
-  return str;
-}
-
 function prepareResult(db, row) {
   const [seasonName, cityName, sportName, eventName, medalName] = row.slice(10, 15);
   const medal = TYPE_MEDAL[medalName];
-  const eventId = db.prepare(`SELECT id FROM Events WHERE \`name\` = '${escapeQuotes(eventName)}'`).get().id;
+  const event = escapeSQLite3SingleQuotes(eventName);
+  const eventId = db.prepare(`SELECT id FROM Events WHERE \`name\` = '${event}'`).get().id;
   const sportId = db.prepare('SELECT id FROM Sports WHERE `name` = ?').get(sportName).id;
-  const city = escapeQuotes(cityName);
+  const city = escapeSQLite3SingleQuotes(cityName);
 
   const gameId = db
     .prepare(`SELECT id FROM Games WHERE year = ? AND season = ? AND city LIKE '%${city}%'`)
