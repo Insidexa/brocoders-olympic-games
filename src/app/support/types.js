@@ -1,9 +1,10 @@
 const { TYPE_MEDAL } = require('../../models/Result');
 const { TYPE_SEASON } = require('../../models/Game');
+const { NA } = require('../../models/Result');
 
 const SEASONS = Object.keys(TYPE_SEASON).map(season => season.toLowerCase());
 const MEDALS = Object.keys(TYPE_MEDAL)
-  .filter(medal => medal !== 'NA').map(medal => medal.toLowerCase());
+  .filter(medal => medal !== NA).map(medal => medal.toLowerCase());
 
 function capitalizeProp(prop) {
   return `${prop.charAt(0).toUpperCase()}${prop.slice(1)}`;
