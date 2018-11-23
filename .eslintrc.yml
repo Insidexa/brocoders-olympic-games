@@ -11,3 +11,4 @@ rules:
   quotes: 0
   guard-for-in: 0
   no-restricted-globals: 0
+  arrow-body-style: 0
