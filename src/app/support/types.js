@@ -30,5 +30,6 @@ exports.seasonToEnum = seasonToEnum;
 exports.medalToEnum = medalToEnum;
 exports.checkIsMedal = checkIsMedal;
 exports.checkIsSeason = checkIsSeason;
+exports.capitalizeProp = capitalizeProp;
 exports.SEASONS = SEASONS;
 exports.MEDALS = MEDALS;
