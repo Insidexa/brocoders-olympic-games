@@ -1,6 +1,6 @@
 const { Game, TYPE_SEASON } = require('../../../models/Game');
 
-class GameCSV {
+class GameCsv {
   constructor(csvArray, previous) {
     this.start = previous || 8;
     this.end = 12;
@@ -23,4 +23,4 @@ class GameCSV {
   }
 }
 
-exports.GameCSV = GameCSV;
+exports.GameCSV = GameCsv;
