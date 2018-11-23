@@ -3,7 +3,7 @@ const { NA } = require('../../../src/models/result');
 
 describe('NAOrDefault', () => {
   it(`should return null with ${NA}`, () => {
-    expect(NAOrDefault(NA, null)).toBe(null);
+    expect(NAOrDefault(NA, null)).toBeNull();
   });
   it(`should return value if not ${NA}`, () => {
     const someValue = 'some value';

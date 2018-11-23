@@ -22,7 +22,7 @@ describe('AthletesCSV', () => {
   });
 
   it(`should return null if one of the params ${NA}`, () => {
-    expect(athlete.prepareParam(NA)).toBe(null);
+    expect(athlete.prepareParam(NA)).toBeNull();
   });
 
   it('should parsed height in params', () => {
@@ -30,6 +30,6 @@ describe('AthletesCSV', () => {
   });
 
   it(`should parsed weight in params with csv-value ${NA}`, () => {
-    expect(athlete.model.params.weight).toBe(null);
+    expect(athlete.model.params.weight).toBeNull();
   });
 });

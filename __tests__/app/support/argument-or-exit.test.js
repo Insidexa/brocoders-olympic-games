@@ -16,6 +16,6 @@ describe('argumentOrExit', () => {
     global.process = realProcess;
   });
   it('argument with initialized value should return true', () => {
-    expect(argumentOrExit('winter')).toBe(true);
+    expect(argumentOrExit('winter')).toBeTruthy();
   });
 });
