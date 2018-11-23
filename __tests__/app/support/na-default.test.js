@@ -1,5 +1,5 @@
 const { NAOrDefault } = require('../../../src/app/support/na-default');
-const { NA } = require('../../../src/models/Result');
+const { NA } = require('../../../src/models/result');
 
 describe('NAOrDefault', () => {
   it(`should return null with ${NA}`, () => {

@@ -3,7 +3,7 @@ const {
   athletes, teams, games, sports, events, csv,
 } = require('../../app/csv/parsing');
 const { TYPE_SEASON } = require('../../app/csv/mappers/game-csv.js');
-const { TYPE_MEDAL } = require('./../../models/Result.js');
+const { TYPE_MEDAL } = require('../../models/result.js');
 
 Object.prototype.remap = function () {
   return JSON.parse(JSON.stringify(this));

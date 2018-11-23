@@ -1,6 +1,6 @@
 const { Team } = require('../../../models/team');
 
-class TeamCsv {
+class TeamCSV {
   constructor(csvArray, previous) {
     this.start = previous || 6;
     this.end = 8;
@@ -26,4 +26,4 @@ class TeamCsv {
   }
 }
 
-exports.TeamCSV = TeamCsv;
+exports.TeamCSV = TeamCSV;

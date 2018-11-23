@@ -1,7 +1,7 @@
 const { Athlete } = require('../../../models/athlete');
 const { NAOrDefault } = require('../../support/na-default');
 
-class AthleteCsv {
+class AthleteCSV {
   constructor(index, csvArray, previous) {
     this.index = index;
     this.start = previous || 0;
@@ -48,4 +48,4 @@ class AthleteCsv {
   }
 }
 
-exports.AthletesCSV = AthleteCsv;
+exports.AthletesCSV = AthleteCSV;

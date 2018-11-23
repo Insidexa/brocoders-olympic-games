@@ -1,6 +1,6 @@
 const { Event } = require('../../../models/event');
 
-class EventCsv {
+class EventCSV {
   constructor(csvArray, previous) {
     this.start = previous || 13;
     this.end = 14;
@@ -21,4 +21,4 @@ class EventCsv {
   }
 }
 
-exports.EventCSV = EventCsv;
+exports.EventCSV = EventCSV;
