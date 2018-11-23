@@ -1,4 +1,4 @@
-const { NA } = require('./../../models/Result');
+const { NA } = require('../../models/result');
 
 function NAOrDefault(value, def) {
   return value === NA ? def : value;

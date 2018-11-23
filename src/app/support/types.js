@@ -1,6 +1,6 @@
-const { TYPE_MEDAL } = require('../../models/Result');
-const { TYPE_SEASON } = require('../../models/Game');
-const { NA } = require('../../models/Result');
+const { TYPE_MEDAL } = require('../../models/result');
+const { TYPE_SEASON } = require('../../models/game');
+const { NA } = require('../../models/result');
 
 const SEASONS = Object.keys(TYPE_SEASON).map(season => season.toLowerCase());
 const MEDALS = Object.keys(TYPE_MEDAL)

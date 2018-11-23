@@ -1,4 +1,4 @@
-const { Sport } = require('../../../models/Sport');
+const { Sport } = require('../../../models/sport');
 
 class SportCsv {
   constructor(csvArray, previous) {

@@ -1,4 +1,4 @@
-const { Event } = require('../../../models/Event');
+const { Event } = require('../../../models/event');
 
 class EventCsv {
   constructor(csvArray, previous) {
