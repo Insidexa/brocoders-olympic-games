@@ -18,7 +18,8 @@
     "test": "./node_modules/.bin/jest",
     "eslint": "./node_modules/.bin/eslint ./src/",
     "import": "node bin/import",
-    "stat": "node bin/stat"
+    "stat": "node bin/stat",
+    "coverage": "./node_modules/.bin/jest --coverage"
   },
   "author": "",
   "license": "ISC"
