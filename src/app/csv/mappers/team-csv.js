@@ -18,7 +18,7 @@ class TeamCSV {
   }
 
   prepareName(name) {
-    return name.replace(/(-[0-9])/g, '');
+    return name.replace(/(-[0-9]+)/g, '');
   }
 
   getLastColumnNumber() {
