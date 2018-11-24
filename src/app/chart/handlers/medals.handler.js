@@ -58,7 +58,7 @@ class MedalsHandler {
       if (checkIsSeason(maybeSeason)) {
         this.season = seasonToEnum(maybeSeason);
       } else {
-        argumentOrExit(undefined, SEASON_MSG.split('or')[0]);
+        argumentOrExit(undefined, SEASON_MSG);
       }
     } else {
       const maybeMedal = _maybeMedal.toLowerCase();
@@ -70,7 +70,7 @@ class MedalsHandler {
   }
 
   initSeason(maybeSeason, maybeMedal) {
-    const isSeason = checkIsSeason(maybeSeason) || checkIsMedal(maybeSeason);
+    const isSeason = checkIsSeason(maybeSeason) || checkIsSeason(maybeMedal);
     if (!isSeason) {
       argumentOrExit(undefined, SEASON_MSG);
     }
@@ -85,7 +85,7 @@ class MedalsHandler {
   }
 
   initMedal(maybeMedal, maybeSeason) {
-    const isMedal = checkIsMedal(maybeMedal) || checkIsSeason(maybeMedal);
+    const isMedal = checkIsMedal(maybeMedal) || checkIsMedal(maybeSeason);
     if (!isMedal) {
       argumentOrExit(undefined, MEDAL_MSG);
     }
