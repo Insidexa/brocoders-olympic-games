@@ -1,19 +1,40 @@
-const { CSVReader } = require('../../../src/app/csv/csv-reader');
+const { CSVParser } = require('../../../src/app/csv/csv-parser');
 
-describe('CSVReader', () => {
-  const csvReader = new CSVReader('__tests__/app/csv/example.csv');
-  const mockCallback = jest.fn(line => line);
-  const line = `"1","A Dijiang","M",24,180,80,"China","CHN","1992 Summer",1992,"Summer","Barcelona","Basketball","Basketball Men's Basketball",NA`;
+describe('CSVParser', () => {
+  const csvParser = new CSVParser('__tests__/app/csv/game-cities.csv');
+  csvParser.parse();
 
-  it('should call callback on every line', () => {
-    csvReader.parse(mockCallback);
-
-    expect(mockCallback.mock.calls.length).toBe(1);
+  it('should correct parse csv row with separator in column string', () => {
+    const stringWithDotInQuotes = `1, "Pedro's", 2, NA, "1, 2, 3", "a, b"`;
+    const csvArr = csvParser.CSVStringToArray(stringWithDotInQuotes);
+    expect(csvArr).toEqual([
+      "1",
+      `"Pedro's"`,
+      '2',
+      'NA',
+      `"1, 2, 3"`,
+      `"a, b"`,
+    ]);
   });
 
-  it('should return 1 row without header', () => {
-    csvReader.parse(mockCallback);
+  it('should remove double quotes', () => {
+    expect(csvParser.removeQuotesIfNeeded(`"Pedro's"`)).toBe(`Pedro's`);
+  });
 
-    expect(mockCallback.mock.calls[0][0]).toBe(line);
+  it('should return correct length for generated data', () => {
+    const {
+      games, events, sports, athletes, teams,
+    } = csvParser;
+    expect(games).toHaveLength(2);
+    expect(events).toHaveLength(2);
+    expect(sports).toHaveLength(2);
+    expect(athletes).toHaveLength(4);
+    expect(teams).toHaveLength(2);
+  });
+
+  it('should find cities for games', () => {
+    const { games } = csvParser;
+    expect(games[0].model.city).toBe('Odessa,Sumy');
+    expect(games[1].model.city).toBe('Chernigov,Kiev');
   });
 });
