@@ -1,4 +1,4 @@
-const { CSVReader } = require('./csv.reader');
+const { CSVReader } = require('./csv-reader');
 const { AthletesCSV } = require('./mappers/athlete-csv.js');
 const { TeamCSV } = require('./mappers/team-csv.js');
 const { TYPE_SEASON } = require('../../models/game.js');

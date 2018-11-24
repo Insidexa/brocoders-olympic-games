@@ -1,4 +1,4 @@
-const { CSVReader } = require('../../../src/app/csv/csv.reader');
+const { CSVReader } = require('../../../src/app/csv/csv-reader');
 
 describe('CSVReader', () => {
   const csvReader = new CSVReader('__tests__/app/csv/example.csv');

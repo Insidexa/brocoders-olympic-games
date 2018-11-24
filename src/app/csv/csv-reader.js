@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-class CSVReader {
+class CsvReader {
   constructor(path) {
     this.assertFileExists(path);
 
@@ -22,4 +22,4 @@ class CSVReader {
   }
 }
 
-exports.CSVReader = CSVReader;
+exports.CSVReader = CsvReader;
