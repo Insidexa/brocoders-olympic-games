@@ -1,142 +1,146 @@
-const sqlite3 = require('better-sqlite3');
-const { CSVParser } = require('../../app/csv/csv-parser');
-const { TYPE_SEASON } = require('../../app/csv/mappers/game-csv.js');
-const { TYPE_MEDAL } = require('../../models/result.js');
 const { escapeSQLite3SingleQuotes } = require('../../app/support/escape-sqlite3-single-quotes');
+const { seasonToEnum, medalToEnum } = require('./../../app/support/types');
 
-Object.prototype.remap = function () {
-  return JSON.parse(JSON.stringify(this));
-};
+class CSVImporter {
+  constructor(db, parser) {
+    this.db = db;
+    this.parser = parser;
 
-function insertTeams(db, teams) {
-  const insert = db.prepare('INSERT INTO Teams(`name`, noc_name) VALUES (@name, @noc_name)');
+    this.initDBEvents();
+    this.parser.parse();
+  }
 
-  const insertMany = db.transaction((teams) => {
-    for (const team of teams) {
-      insert.run(team);
-    }
-  });
+  run() {
+    this.insertTeams();
+    this.insertEvents();
+    this.insertSports();
+    this.insertGames();
+    const results = this.insertAthletes();
+    this.insertResults(results);
+  }
 
-  insertMany(teams.map(team => team.model.remap()));
-}
+  insertTeams() {
+    const insert = this.db.prepare('INSERT INTO Teams(`name`, noc_name) VALUES (@name, @noc_name)');
 
-function insertGames(db, games) {
-  const insert = db.prepare('INSERT INTO Games(year, season, city) VALUES (@year, @season, @city)');
+    const insertMany = this.db.transaction((teams) => {
+      for (const team of teams) {
+        insert.run(team);
+      }
+    });
 
-  const insertMany = db.transaction((games) => {
-    for (const game of games) {
-      insert.run(game);
-    }
-  });
+    insertMany(this.parser.teams.map(team => this.remap(team.model)));
+  }
 
-  insertMany(games.map(game => game.model.remap()));
-}
+  insertGames() {
+    const insert = this.db.prepare('INSERT INTO Games(year, season, city) VALUES (@year, @season, @city)');
 
-function insertEvents(db, events) {
-  const insert = db.prepare('INSERT INTO Events(name) VALUES (@name)');
+    const insertMany = this.db.transaction((games) => {
+      for (const game of games) {
+        insert.run(game);
+      }
+    });
 
-  const insertMany = db.transaction((events) => {
-    for (const event of events) {
-      insert.run(event);
-    }
-  });
+    insertMany(this.parser.games.map(game => this.remap(game.model)));
+  }
 
-  insertMany(events.map(event => event.model.remap()));
-}
+  insertEvents() {
+    const insert = this.db.prepare('INSERT INTO Events(name) VALUES (@name)');
 
-function insertSports(db, sports) {
-  const insert = db.prepare('INSERT INTO Sports(name) VALUES (@name)');
+    const insertMany = this.db.transaction((events) => {
+      for (const event of events) {
+        insert.run(event);
+      }
+    });
 
-  const insertMany = db.transaction((sports) => {
-    for (const sport of sports) {
-      insert.run(sport);
-    }
-  });
+    insertMany(this.parser.events.map(event => this.remap(event.model)));
+  }
 
-  insertMany(sports.map(sport => sport.model.remap()));
-}
+  insertSports() {
+    const insert = this.db.prepare('INSERT INTO Sports(name) VALUES (@name)');
 
-function prepareResult(db, row) {
-  const [seasonName, cityName, sportName, eventName, medalName] = row.slice(10, 15);
-  const medal = TYPE_MEDAL[medalName];
-  const event = escapeSQLite3SingleQuotes(eventName);
-  const eventId = db.prepare(`SELECT id FROM Events WHERE \`name\` = '${event}'`).get().id;
-  const sportId = db.prepare('SELECT id FROM Sports WHERE `name` = ?').get(sportName).id;
-  const city = escapeSQLite3SingleQuotes(cityName);
+    const insertMany = this.db.transaction((sports) => {
+      for (const sport of sports) {
+        insert.run(sport);
+      }
+    });
 
-  const gameId = db
-    .prepare(`SELECT id FROM Games WHERE year = ? AND season = ? AND city LIKE '%${city}%'`)
-    .get(row[9], TYPE_SEASON[seasonName]).id;
+    insertMany(this.parser.sports.map(sport => this.remap(sport.model)));
+  }
 
-  return {
-    medal,
-    game_id: gameId,
-    event_id: eventId,
-    sport_id: sportId,
-  };
-}
+  prepareResult(row) {
+    const [seasonName, cityName, sportName, eventName, medalName] = row.slice(10, 15);
+    const medal = medalToEnum(medalName);
+    const event = escapeSQLite3SingleQuotes(eventName);
+    const city = escapeSQLite3SingleQuotes(cityName);
+    const eventId = this.db.prepare(`SELECT id FROM Events WHERE \`name\` = '${event}'`).get().id;
+    const sportId = this.db.prepare('SELECT id FROM Sports WHERE `name` = ?').get(sportName).id;
 
-function insertResults(db, results) {
-  const insert = db.prepare(`
+    const gameId = this.db
+      .prepare(`SELECT id FROM Games WHERE year = ? AND season = ? AND city LIKE '%${city}%'`)
+      .get(row[9], seasonToEnum(seasonName)).id;
+
+    return {
+      medal,
+      game_id: gameId,
+      event_id: eventId,
+      sport_id: sportId,
+    };
+  }
+
+  insertResults(results) {
+    const insert = this.db.prepare(`
 INSERT INTO Results(athlete_id, game_id, sport_id, event_id, medal)
 VALUES (@athlete_id, @game_id, @sport_id, @event_id, @medal)
 `);
 
-  const insertMany = db.transaction((results) => {
-    for (const result of results) {
-      insert.run(result);
-    }
-  });
+    const insertMany = this.db.transaction((results) => {
+      for (const result of results) {
+        insert.run(result);
+      }
+    });
 
-  insertMany(results);
-}
+    insertMany(results);
+  }
 
-function insertAthletes(db, athletes, csv) {
-  const preparedResults = [];
-  const insert = db.prepare(`
+  insertAthletes() {
+    const preparedResults = [];
+    const insert = this.db.prepare(`
 INSERT INTO Athletes(full_name, sex, year_of_birth, params, team_id)
 VALUES (@full_name, @sex, @year_of_birth, @params, @team_id)
 `);
 
-  const insertMany = db.transaction((athletes) => {
-    for (const athlete of athletes) {
-      const row = csv[athlete.index];
-      if (row) {
-        const result = prepareResult(db, row);
-        const team = db.prepare('SELECT id FROM Teams WHERE noc_name = ?').get(row[7]);
-        const ath = athlete.model;
-        ath.team_id = team.id;
-        ath.stringifyParams();
+    const insertMany = this.db.transaction((athletes) => {
+      for (const athlete of athletes) {
+        const row = this.parser.csv[athlete.index];
+        if (row) {
+          const result = this.prepareResult(row);
+          const team = this.db.prepare('SELECT id FROM Teams WHERE noc_name = ?').get(row[7]);
+          const ath = athlete.model;
+          ath.team_id = team.id;
+          ath.stringifyParams();
 
-        const info = insert.run(ath.remap());
-        result.athlete_id = info.lastInsertRowid;
-        preparedResults.push(result);
+          const info = insert.run(this.remap(ath));
+          result.athlete_id = info.lastInsertRowid;
+          preparedResults.push(result);
+        }
       }
-    }
-  });
+    });
 
-  insertMany(athletes);
+    insertMany(this.parser.athletes);
 
-  return preparedResults;
+    return preparedResults;
+  }
+
+  initDBEvents() {
+    process.on('exit', () => this.db.close());
+    process.on('SIGINT', () => this.db.close());
+    process.on('SIGHUP', () => this.db.close());
+    process.on('SIGTERM', () => this.db.close());
+  }
+
+  remap(object) {
+    return JSON.parse(JSON.stringify(object));
+  }
 }
 
-function importFromCSV() {
-  const db = sqlite3('./storage/olympic_history.db');
-  const parser = new CSVParser('./storage/athlete_events.csv');
-
-  parser.parse();
-
-  insertTeams(db, parser.teams);
-  insertEvents(db, parser.events);
-  insertSports(db, parser.sports);
-  insertGames(db, parser.games);
-  const results = insertAthletes(db, parser.athletes, parser.csv);
-  insertResults(db, results);
-
-  process.on('exit', () => db.close());
-  process.on('SIGINT', () => db.close());
-  process.on('SIGHUP', () => db.close());
-  process.on('SIGTERM', () => db.close());
-}
-
-exports.importFromCSV = importFromCSV;
+exports.CSVImporter = CSVImporter;
