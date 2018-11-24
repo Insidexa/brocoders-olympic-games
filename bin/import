@@ -1,5 +1,13 @@
 #!/usr/bin/env node
 
-const { importFromCSV } = require('./../src/database/seeding/import');
+const sqlite3 = require('better-sqlite3');
+const { SQLITE3_DB, ATHLETE_EVENTS_CSV } = require('../src/config/app');
+const { CSVImporter } = require('./../src/database/seeding/import');
+const { CSVParser } = require('./../src/app/csv/csv-parser');
 
-importFromCSV();
+const importer = new CSVImporter(
+  sqlite3(SQLITE3_DB),
+  new CSVParser(ATHLETE_EVENTS_CSV),
+);
+
+importer.run();

@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
 const sqlite3 = require('better-sqlite3');
+const { SQLITE3_DB } = require('../src/config/app');
 const { ChartCLI } = require('./../src/app/chart/cli');
 
 const cli = new ChartCLI(
-  sqlite3('./storage/olympic_history.db'),
+  sqlite3(SQLITE3_DB),
 );
 cli.run(process.argv);
