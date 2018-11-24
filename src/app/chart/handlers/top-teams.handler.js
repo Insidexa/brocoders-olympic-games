@@ -61,14 +61,11 @@ class TopTeamsHandler {
   }
 
   filterByMaxAverage(results) {
-    const average = this.getAverage(results);
-    return results.filter((item) => {
-      return average === MAX_MEDALS_AVERAGE && item.countMedals > MAX_MEDALS_AVERAGE;
-    });
+    return results.filter(item => item.countMedals > MAX_MEDALS_AVERAGE);
   }
 
   getAverage(results) {
-    const sum = results.reduce((sum, current) => sum + current, 0);
+    const sum = results.reduce((sum, current) => sum + current.countMedals, 0);
     return Math.ceil(sum / results.length);
   }
 
