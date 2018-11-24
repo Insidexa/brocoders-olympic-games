@@ -5,30 +5,39 @@ class Output {
   constructor() {
     this.tabulation = `\t`;
     this.countTabs = 1;
+    this.ratio = {
+      value: 30,
+      symbols: 40,
+    };
   }
 
-  calcProportional(value) {
-    const calculated = (value * 40) / 30;
-    if (calculated > MAX_CHART_LINE_SYMBOLS) {
+  calculateRatio(value) {
+    const ratio = (value * this.ratio.symbols) / this.ratio.value;
+    if (ratio > MAX_CHART_LINE_SYMBOLS) {
       return MAX_CHART_LINE_SYMBOLS;
     }
 
-    return calculated;
+    return ratio;
   }
 
   show(results, headerName) {
     this.printHeader(headerName);
-    results.forEach(result => this.printRow(result));
+    results.forEach((result) => {
+      const [headerName, propName] = Object.keys(result);
+      const value = result[propName];
+      const progressOrZero = value === 0 ? value : this.getProgress(value);
+      const headerValue = result[headerName];
+
+      this.printRow(headerValue, progressOrZero);
+    });
   }
 
-  printRow(item) {
-    const [headerProp, propName] = Object.keys(item);
-    const value = item[propName] === 0 ? item[propName] : this.printChartLine(item[propName]);
-    console.log(`${item[headerProp]}${this.getTabulation()}${value}`);
+  printRow(header, value) {
+    console.log(`${header}${this.getTabulation()}${value}`);
   }
 
-  printChartLine(value) {
-    return CHART_SYMBOL.repeat(this.calcProportional(value));
+  getProgress(value) {
+    return CHART_SYMBOL.repeat(this.calculateRatio(value));
   }
 
   printHeader(headerName) {
