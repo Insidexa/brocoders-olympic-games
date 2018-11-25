@@ -1,4 +1,5 @@
 const { TopTeamsHandler } = require('../../../../src/app/chart/handlers/top-teams-handler');
+const { SEASON_MSG } = require('../../../../src/app/support/messages');
 
 describe('TopTeamsHandler', () => {
   it('should correct parse all arguments', () => {
@@ -36,5 +37,13 @@ describe('TopTeamsHandler', () => {
       { countMedals: 200 },
       { countMedals: 300 },
     ])).toHaveLength(2);
+  });
+
+  it('should throw error when season not entered', () => {
+    try {
+      const handler = new TopTeamsHandler(null, [1990, 'silver']);
+    } catch (e) {
+      expect(e.message).toMatch(SEASON_MSG);
+    }
   });
 });
