@@ -11,10 +11,16 @@ class ChartCLI {
 
   run(argv) {
     const parser = new CLIParser(argv);
-    const command = parser.getCommand(this.db);
-    const results = command.handle();
 
-    this.output.show(results, command.headerName);
+    try {
+      const command = parser.getCommand(this.db);
+      const results = command.handle();
+
+      this.output.show(results, command.headerName);
+    } catch (error) {
+      console.log(error.message);
+      process.exit(1);
+    }
   }
 
   initDBEvents() {

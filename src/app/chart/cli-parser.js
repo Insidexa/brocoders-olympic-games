@@ -23,15 +23,11 @@ class CLIParser {
     const [commandName, ...argv] = this.arguments;
 
     if (!commandName) {
-      console.log(`Enter command. ${this.commandDeclarations()}`);
-
-      process.exit(1);
+      throw new Error(`Enter command. ${this.commandDeclarations()}`);
     }
 
     if (!COMMAND_TYPES[commandName]) {
-      console.log(`Command '${commandName}' not found. ${this.commandDeclarations()}`);
-
-      process.exit(1);
+      throw new Error(`Command '${commandName}' not found. ${this.commandDeclarations()}`);
     }
     const commandInstance = new COMMAND_TYPES[commandName](db, argv);
     return commandInstance;
