@@ -1,4 +1,4 @@
-const { argumentOrExit } = require('../../support/argument-or-exit');
+const { argumentOrError } = require('../../support/argument-or-exit');
 const {
   checkIsMedal, checkIsSeason, medalToEnum, seasonToEnum,
 } = require('../../support/types');
@@ -21,7 +21,7 @@ class TopTeamsHandler {
     const medal = argv.find(arg => checkIsMedal(arg));
     const year = argv.find(arg => this.checkIsNumber(arg));
     if (!season) {
-      argumentOrExit(undefined, SEASON_MSG);
+      argumentOrError(undefined, SEASON_MSG);
     }
     this.season = seasonToEnum(season);
 
