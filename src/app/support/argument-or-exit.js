@@ -1,11 +1,10 @@
 // eslint-disable-next-line consistent-return
-function argumentOrExit(value, text) {
+function argumentOrError(value, text) {
   if (typeof value !== 'undefined') {
     return true;
   }
 
-  console.log(text);
-  process.exit(1);
+  throw new Error(text);
 }
 
-exports.argumentOrExit = argumentOrExit;
+exports.argumentOrError = argumentOrError;
