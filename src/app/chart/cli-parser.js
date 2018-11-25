@@ -1,5 +1,5 @@
-const { MedalsHandler } = require('./handlers/medals.handler');
-const { TopTeamsHandler } = require('./handlers/top-teams.handler');
+const { MedalsHandler } = require('./handlers/medals-handler');
+const { TopTeamsHandler } = require('./handlers/top-teams-handler');
 
 const COMMAND_TYPES = {
   medals: MedalsHandler,
