@@ -1,4 +1,4 @@
-const { argumentOrExit } = require('../../support/argument-or-exit');
+const { argumentOrError } = require('../../support/argument-or-exit');
 const {
   checkIsMedal, checkIsSeason, medalToEnum, seasonToEnum,
 } = require('../../support/types');
@@ -10,11 +10,6 @@ class MedalsHandler {
     this.db = db;
     this.medal = null;
     const [_maybeSeason, noc, _maybeMedal] = argv;
-
-    argumentOrExit(_maybeSeason, SEASON_MSG);
-    argumentOrExit(noc, NOC_MSG);
-    // medal optional
-    // argumentOrExit(_maybeMedal, MEDAL_MSG);
 
     this.initParams(_maybeSeason, noc, _maybeMedal);
   }
@@ -55,10 +50,11 @@ class MedalsHandler {
     const maybeSeason = _maybeSeason.toLowerCase();
 
     if (typeof _maybeMedal === 'undefined') {
+      argumentOrError(_maybeSeason, SEASON_MSG);
       if (checkIsSeason(maybeSeason)) {
         this.season = seasonToEnum(maybeSeason);
       } else {
-        argumentOrExit(undefined, SEASON_MSG);
+        argumentOrError(undefined, SEASON_MSG);
       }
     } else {
       const maybeMedal = _maybeMedal.toLowerCase();
@@ -66,13 +62,14 @@ class MedalsHandler {
       this.initMedal(maybeMedal, maybeSeason);
     }
 
+    argumentOrError(noc, NOC_MSG);
     this.noc = noc.toUpperCase();
   }
 
   initSeason(maybeSeason, maybeMedal) {
     const isSeason = checkIsSeason(maybeSeason) || checkIsSeason(maybeMedal);
     if (!isSeason) {
-      argumentOrExit(undefined, SEASON_MSG);
+      argumentOrError(undefined, SEASON_MSG);
     }
 
     if (checkIsSeason(maybeSeason)) {
@@ -87,7 +84,7 @@ class MedalsHandler {
   initMedal(maybeMedal, maybeSeason) {
     const isMedal = checkIsMedal(maybeMedal) || checkIsMedal(maybeSeason);
     if (!isMedal) {
-      argumentOrExit(undefined, MEDAL_MSG);
+      argumentOrError(undefined, MEDAL_MSG);
     }
 
     if (checkIsMedal(maybeMedal)) {
